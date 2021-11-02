@@ -39,6 +39,8 @@
 
         /**
          * Attempts a connection to a database whose information is new or existing
+         * @param   mixed   @newdb_info
+         * @return  bool    true on success, false on failure
          */
         public function connect(...$newdb_info) : bool
         {
@@ -94,7 +96,10 @@
         }
 
         /**
-         * Creates/Sets a query template and parameters to be used when executing a query
+         * Creates/Sets a query template and binds parameters to be used when executing a query
+         * @param string $query_template
+         * @param mixed  $query_params
+         * @return bool - true on success, false on failure
          */
         public function set(string $query_template , &...$query_params) : bool
         {
@@ -158,6 +163,11 @@
             return true;
         }
 
+        /**
+         * Performs the actual query
+         * @param   mixed $query_params
+         * @return  mixed ( mysqli_result if query operation is retrieval otherwise true on success, false on failure )
+         */
         public function query(...$query_params) //: mysqli_result|bool (php >= 8.0.0 )
         {
             if($this->stmt->execute(...$query_params))
@@ -173,6 +183,13 @@
             }
         }
 
+        /**
+         * Sets the various options that control the operation of a mysqli_safe object
+         * @param   int $option
+         * @param   mixed   $value
+         * @param   mixed   $params
+         * @return  bool    true on success, false on failure
+         */
         public function setopt(int $option , /* mixed  ( php >= 8.0.0 ) */ $value , ...$params)    : bool
         {
             if($option == DEDUCE_TYPE)
@@ -188,6 +205,11 @@
             }
         }
 
+        /**
+         * Closes any existing statement and resets the state of all statement error attributes
+         * @param   void    void
+         * @return  bool    true on success, false on failure
+         */
         public function resetStmt() : bool
         {
             //Reset any previous stmt errors first
@@ -219,6 +241,11 @@
             }
         }
 
+        /**
+         * Closes any existing database connection and resets the state of all database error attributes
+         * @param   void    void
+         * @return  bool    true on success, false on failure
+         */
         public function resetDB() : bool
         {
             if($this->db_error)
@@ -254,11 +281,21 @@
             }
         }
 
+        /**
+         * Returns the database connection attribute
+         * @param   void    void
+         * @return  mysqli  a mysqli object or null if no db connection exists yet
+         */
         public function getDB() : ?mysqli
         {
             return $this->db;
         }
 
+        /**
+         * Returns the prepared statment attribute
+         * @param   void    void
+         * @return  mysqli_stmt  a mysqli_stmt object or null if no prepared statement has been created.
+         */
         public function getStmt() : ?mysqli_stmt
         {
             return $this->stmt;
