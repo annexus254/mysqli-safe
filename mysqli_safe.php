@@ -1,5 +1,7 @@
 <?php
 
+    define('DEDUCE_TYPE' , 1);
+
     class mysqli_safe
     {
         private ?mysqli      $db                =   null;
@@ -11,10 +13,11 @@
 
         private ?array       $db_info           =   null;
 
+        private bool         $deduce_type       =   true;
+
         public  ?string      $connect_error     =   null;
 
         public  ?string      $stmt_bind_error   =   null;
-
         public  ?string      $stmt_error        =   null;
         public  ?int         $stmt_errno        =   0;
 
@@ -89,7 +92,7 @@
         /**
          * Creates/Sets a query template and parameters to be used when executing a query
          */
-        public function set(string $query_template , string $query_types , &...$query_params) : bool
+        public function set(string $query_template , &...$query_params) : bool
         {
             //Reset any existing stmt first
             if($this->resetStmt() == false)
@@ -112,7 +115,19 @@
             //Once we've reached this point, we have a fully prepared statement
 
             $this->stmt_template                =   $query_template;
-            $this->stmt_types                   =   $query_types;
+
+            if($this->deduce_type)
+            {   
+                $this->stmt_types               =   "";
+                foreach ($query_params as $key => $value) {
+                    $val_type                   =   gettype($value)[0];
+                    if( in_array($val_type , array('i','d','s')) )
+                        $this->stmt_types       .=  $val_type;
+                    else
+                        $this->stmt_type        .=  'b';
+                }
+            }
+
             foreach ($query_params as $key => $value) 
                 $query_params[$key]             =   htmlspecialchars($value , ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE | ENT_QUOTES);
             $this->stmt_params                  =   $query_params;
@@ -151,6 +166,16 @@
                 $this->db_error                 =   $this->stmt->error;
                 $this->db_errno                 =   $this->stmt->errno;
                 return false;
+            }
+        }
+
+        public function setopt(int $option , /* mixed  ( php >= 8.0.0 ) */ $value , ...$params)    : bool
+        {
+            if($option == DEDUCE_TYPE)
+            {
+                $this->deduce_type              =   (bool)$value;
+                $this->stmt_types               =   $params[0];
+                return true;
             }
         }
 
