@@ -128,7 +128,7 @@
                     if( in_array($val_type , array('i','d','s')) )
                         $this->stmt_types       .=  $val_type;
                     else
-                        $this->stmt_type        .=  'b';
+                        $this->stmt_types       .=  'b';
                 }
             }
 
