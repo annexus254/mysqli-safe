@@ -1,6 +1,7 @@
 <?php
 
     define('DEDUCE_TYPE' , 1);
+    define('REUSE_STMT'  , 2);
 
     class mysqli_safe
     {
@@ -13,7 +14,10 @@
 
         private ?array       $db_info           =   null;
 
+        //Options
         private bool         $deduce_type       =   true;
+        private bool         $reuse_stmt        =   false;
+        //
 
         public  ?string      $connect_error     =   null;
 
@@ -36,7 +40,7 @@
         /**
          * Attempts a connection to a database whose information is new or existing
          */
-        public function connect(bool $reuseStmt = false , ...$newdb_info) : bool
+        public function connect(...$newdb_info) : bool
         {
             //Clear any previous connection error
             if($this->connect_error)
@@ -67,7 +71,7 @@
 
             //Once we have reached this point, a database connection has been successfully established
 
-            if($reuseStmt)
+            if($this->reuse_stmt)
             {
                 if($this->stmt_template && $this->stmt_types && $this->stmt_params)
                 {
@@ -176,6 +180,11 @@
                 $this->deduce_type              =   (bool)$value;
                 $this->stmt_types               =   $params[0];
                 return true;
+            }
+            elseif($option == REUSE_STMT)
+            {
+                $this->reuse_stmt               =   (bool)$value;
+                return  true;
             }
         }
 
