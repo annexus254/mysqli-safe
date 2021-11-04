@@ -1,6 +1,6 @@
 <h1 align="center">                                  Mysqli-Safe </h1>
 
-<h2 align="center"><i> A simple, easy to use and secure way of accessing a Mysql database from within your PHP programs </i></h2>
+<h2 align="center"><i> A simple, easy-to-use and secure way of accessing a Mysql database from within your PHP programs </i></h2>
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
