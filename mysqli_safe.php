@@ -29,9 +29,18 @@
         public  ?int         $db_errno          =   0;
 
 
-        public function __construct(string $server , string $username , string $pwd , string $database , bool $connect = true)
+        /**
+         * This object represents a safe connection between PHP and a MYSQL/MYSQL-like database.
+         * @param   string  hostname    Hostname/Ip-address of the server application
+         * @param   string  username    The MYSQL username
+         * @param   string  password    Password for the given MYSQL user
+         * @param   string  database    Specifies the default database to perform queries on.
+         * @param   bool    connect     Determines whether the database connection is opened during the object construction. If not, the user will have to call the connect method before using the resultany Mysqli-safe object.
+         * @return mixed
+         */
+        public function __construct(string $hostname , string $username , string $password , string $database , bool $connect = true)
         {
-            $this->db_info                      =   array($server , $username , $pwd , $database);
+            $this->db_info                      =   array($hostname , $username , $password , $database);
 
             if($connect)
                 $this->connect();
@@ -39,7 +48,7 @@
 
         /**
          * Attempts a connection to a database whose information is new or existing
-         * @param   mixed   @newdb_info
+         * @param   mixed   newdb_info  [Optional]Information for the new database(hostname,username,password,database). See the constructor's arguments for details
          * @return  bool    true on success, false on failure
          */
         public function connect(...$newdb_info) : bool
@@ -97,8 +106,8 @@
 
         /**
          * Creates/Sets a query template and binds parameters to be used when executing a query
-         * @param string $query_template
-         * @param mixed  $query_params
+         * @param string $query_template    The template to be used for stmt preparation
+         * @param mixed  $query_params      The parameters to be passed to the prepared stmt upon execution of the query. Note that by default, the type information is inferred by the class itself.
          * @return bool - true on success, false on failure
          */
         public function set(string $query_template , &...$query_params) : bool
@@ -165,8 +174,8 @@
 
         /**
          * Performs the actual query
-         * @param   mixed $query_params
-         * @return  mixed ( mysqli_result if query operation is retrieval otherwise true on success, false on failure )
+         * @param   mixed $query_params [Optional]The parameters to be passed to the prepared stmt. Note that this is not a must and is also not recommended. Use the set() method instead if you want to change the query parameters.
+         * @return  mixed mysqli_result if query operation is retrieval otherwise true on success, false on failure
          */
         public function query(...$query_params) //: mysqli_result|bool (php >= 8.0.0 )
         {
@@ -185,9 +194,9 @@
 
         /**
          * Sets the various options that control the operation of a mysqli_safe object
-         * @param   int $option
-         * @param   mixed   $value
-         * @param   mixed   $params
+         * @param   int     $option     Option to be set or removed
+         * @param   mixed   $value      Value of the given option
+         * @param   mixed   $params     Parameters,if any, of the given option, e.g. in type deduction
          * @return  bool    true on success, false on failure
          */
         public function setopt(int $option , /* mixed  ( php >= 8.0.0 ) */ $value , ...$params)    : bool
