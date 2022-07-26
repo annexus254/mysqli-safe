@@ -11,6 +11,7 @@
         private ?string      $stmt_template     =   null;
         private ?array       $stmt_params       =   null;
         private ?string      $stmt_types        =   null;
+        private ?string      $stmt_params_sep   =   null;
 
         private ?array       $db_info           =   null;
 
@@ -38,9 +39,10 @@
          * @param   bool    connect     Determines whether the database connection is opened during the object construction. If not, the user will have to call the connect method before using the resultany Mysqli-safe object.
          * @return mixed
          */
-        public function __construct(string $hostname , string $username , string $password , string $database , bool $connect = true)
+        public function __construct(string $hostname , string $username , string $password , string $database , string $stmt_params_sep = ',' , bool $connect = true)
         {
             $this->db_info                      =   array($hostname , $username , $password , $database);
+            $this->stmt_params_sep              =   $stmt_params_sep;
 
             if($connect)
                 $this->connect();
@@ -310,10 +312,27 @@
             return $this->stmt;
         }
 
+        /**
+         * Returns the Statement Parameters attribute as a string
+         * @param   void    void
+         * @return  string  a string containing the statement parameters or null if no statement has been created.
+         */
+        public function getStmtParams() : ?string
+        {
+            if($this->stmt_params !== null)
+            {
+                $stmt_params_string            =   implode($this->stmt_params_sep,$this->stmt_params);
+                return $stmt_params_string;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public function __destruct()
         {
             $this->resetStmt();
             $this->resetDB();
         }
     }
-?>
