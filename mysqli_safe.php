@@ -179,7 +179,7 @@
          * @param   mixed $query_params [Optional]The parameters to be passed to the prepared stmt. Note that this is not a must and is also not recommended. Use the set() method instead if you want to change the query parameters.
          * @return  mixed mysqli_result if query operation is retrieval otherwise true on success, false on failure
          */
-        public function query(...$query_params) //: mysqli_result|bool (php >= 8.0.0 )
+        public function query(...$query_params) : mysqli_result|bool //(php >= 8.0.0 )
         {
             if($this->stmt->execute(...$query_params))
             {
@@ -201,7 +201,7 @@
          * @param   mixed   $params     Parameters,if any, of the given option, e.g. in type deduction
          * @return  bool    true on success, false on failure
          */
-        public function setopt(int $option , /* mixed  ( php >= 8.0.0 ) */ $value , ...$params)    : bool
+        public function setopt(int $option , mixed  /*( php >= 8.0.0 )*/ $value , ...$params)    : bool
         {
             if($option == DEDUCE_TYPE)
             {
