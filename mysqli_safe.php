@@ -108,23 +108,8 @@ class mysqli_safe
         //Reset any existing stmt first
         if ($this->resetStmt() == false)
             return false;
-
-        $this->stmt                         =   $this->db->stmt_init();
-        $result                             =   $this->stmt->prepare($query_template);
-
-        if (!$result) {
-            $this->stmt_error               =   $this->stmt->error;
-            $this->stmt_errno               =   $this->stmt->errno;
-            //stmt is not a fully initialized object, so calling close() on it will result in an error
-            $this->stmt                     =   null;
-            return false;
-        }
-
-
-
-        //Once we've reached this point, we have a fully prepared statement
-
-        $this->stmt_template                =   $query_template;
+            
+       	$this->stmt_template                =   $query_template;
 
         if ($this->deduce_type) {
             $this->stmt_types               =   "";
@@ -141,13 +126,28 @@ class mysqli_safe
             $query_params[$key]             =   htmlspecialchars($value, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE | ENT_QUOTES);
         $this->stmt_params                  =   $query_params;
 
+        $this->stmt                         =   $this->db->stmt_init();
+        $result                             =   $this->stmt->prepare($query_template);
+
+        if (!$result) {
+            $this->stmt_error               =   $this->stmt->error;
+            $this->stmt_errno               =   $this->stmt->errno;
+            //stmt is not a fully initialized object, so calling close() on it will result in an error
+            $this->stmt                     =   null;
+            return false;
+        }
+
+
+
+        //Once we've reached this point, we have a fully prepared statement
+
+
         try {
             $this->stmt->bind_param($this->stmt_types, ...$this->stmt_params);
         } catch (ArgumentCountError $error) {
             //There might be something wrong with the template, types or params, so don't store them
             $this->stmt_template            =   null;
             $this->stmt_types               =   null;
-            $this->stmt_params              =   null;
 
             $this->resetStmt();
 
